@@ -110,6 +110,21 @@ public class MoviesDAO extends BaseHibernateDAO {
 			throw re;
 		}
 	}
+	
+	
+	public List findLimitedMovies(Integer max_result) {
+		log.debug("finding all Movies instances");
+		try {
+			String queryString = "from Movies";
+			Query queryObject = getSession().createQuery(queryString);
+			queryObject.setMaxResults(max_result);
+			return queryObject.list();
+		} catch (RuntimeException re) {
+			log.error("find all failed", re);
+			throw re;
+		}
+	}
+	
 
 	public Movies merge(Movies detachedInstance) {
 		log.debug("merging Movies instance");

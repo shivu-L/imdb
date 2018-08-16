@@ -7,6 +7,7 @@ import dao.DirectorsDAO;
 import dao.DirectorsGenresDAO;
 import dao.MoviesDAO;
 import dao.MoviesGenresDAO;
+import dao.RolesDAO;
 import pojo.Actors;
 import pojo.Directors;
 import pojo.DirectorsGenres;
@@ -24,5 +25,7 @@ public class TestActorsDAO {
 		Actors actors = actorsDAO.findById(3l);
 		System.out.println(actors.getFirstName());
 
+
+		
 	}
 }

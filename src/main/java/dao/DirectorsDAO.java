@@ -78,6 +78,8 @@ public class DirectorsDAO extends BaseHibernateDAO {
 		try {
 			String queryString = "from Directors as model where model." + propertyName + "= ?";
 			Query queryObject = getSession().createQuery(queryString);
+			
+			
 			queryObject.setParameter(0, value);
 			return queryObject.list();
 		} catch (RuntimeException re) {
