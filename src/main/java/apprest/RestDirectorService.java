@@ -6,14 +6,12 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import dao.DirectorsDAO;
-import dao.MoviesDAO;
 import pojo.Actors;
 import pojo.Directors;
 import pojo.Movies;
@@ -71,13 +69,10 @@ public class RestDirectorService {
 			List<MovieResponse> movies = new ArrayList<>();
 			DirectorDetailResponse detailResponse = new DirectorDetailResponse();
 
-			DirectorResponse dirResponse = new DirectorResponse(director.getId(), director.getFirstName(),
-					director.getLastName());
-
 			for (Movies movie : director.getMovieses()) {
 				MovieResponse movieDetail = new MovieResponse(movie.getId(), movie.getName(), movie.getYear(),
 						movie.getRank());
-				
+
 				movies.add(movieDetail);
 				List<ActorResponse> actors = new ArrayList<>();
 
@@ -88,11 +83,13 @@ public class RestDirectorService {
 					actors.add(actorResponse);
 				}
 
-				MovieActorResponse movieActorResponse = new MovieActorResponse(movie.getId(), movie.getName(), movie.getYear(), movie.getRank(), actors);
+				MovieActorResponse movieActorResponse = new MovieActorResponse(movie.getId(), movie.getName(),
+						movie.getYear(), movie.getRank(), actors);
 				movieActorResponses.add(movieActorResponse);
 			}
 
-			detailResponse = new DirectorDetailResponse(director.getId(),director.getFirstName(),director.getLastName(), movieActorResponses);
+			detailResponse = new DirectorDetailResponse(director.getId(), director.getFirstName(),
+					director.getLastName(), movieActorResponses);
 
 			return Response.status(200).entity(gson.toJson(detailResponse)).header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
