@@ -6,12 +6,13 @@ public class ActorResponse {
 	private String firstName;
 	private String lastName;
 	private String gender;
-	private String image; 	
-	public String getImage() {
-		return image;
+    private String video;
+    
+    public String getVideo() {
+		return video;
 	}
-	public void setImage(String image) {
-		this.image = image;
+	public void setVideo(String video) {
+		this.video = video;
 	}
 	public ActorResponse() {
 		super();
