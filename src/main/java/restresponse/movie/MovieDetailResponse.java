@@ -14,7 +14,14 @@ public class MovieDetailResponse {
 	private Long year;
 	private Float rank;
 	private String image;	
+	private String video;
 	
+	public String getVideo() {
+		return video;
+	}
+	public void setVideo(String video) {
+		this.video = video;
+	}
 	private List<DirectorResponse> directors = new ArrayList<>(); 
 	private List<ActorResponse> actors = new ArrayList<>();
 	public MovieDetailResponse() {
