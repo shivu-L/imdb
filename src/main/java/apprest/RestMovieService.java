@@ -166,12 +166,6 @@ public class RestMovieService {
 
 	}
 
-	
-	
-	
-	
-
-
 	@GET
 	@Path("top10/{category}")
 	public Response getTopMovieDetail(@PathParam("category") String category) {
