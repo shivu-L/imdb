@@ -6,10 +6,19 @@ public class MovieResponse {
 	private String name;
 	private Long year;
 	private Float rank;
-
+	private String image;
+	
 	public MovieResponse() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	public MovieResponse(Long id, String name, Long year, Float rank) {

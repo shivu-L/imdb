@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -25,7 +26,7 @@ import restresponse.pojo.MovieResponse;
 @Path("/director")
 public class RestDirectorService {
 	private static final Gson gson = new GsonBuilder().setDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz").create();
-
+	private static final Faker faker = new Faker();
 	@GET
 	@Path("{director_id}")
 	public Response getMsg(@PathParam("director_id") Long id) {
@@ -42,6 +43,8 @@ public class RestDirectorService {
 			// setting director response here
 			DirectorResponse dirResponse = new DirectorResponse(director.getId(), director.getFirstName(),
 					director.getLastName());
+			
+			dirResponse.setImage(faker.internet().avatar());
 
 			return Response.status(200).entity(gson.toJson(dirResponse)).header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
@@ -89,7 +92,7 @@ public class RestDirectorService {
 			}
 
 			detailResponse = new DirectorDetailResponse(director.getId(), director.getFirstName(),
-					director.getLastName(), movieActorResponses);
+					director.getLastName(),faker.internet().avatar(), movieActorResponses);
 
 			return Response.status(200).entity(gson.toJson(detailResponse)).header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();

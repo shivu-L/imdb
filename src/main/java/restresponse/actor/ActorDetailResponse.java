@@ -6,6 +6,14 @@ public class ActorDetailResponse {
 	private String firstName;
 	private String lastName;
 	private String gender;
+	private String image;
+	
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
 	public ActorDetailResponse() {
 		super();
 		// TODO Auto-generated constructor stub

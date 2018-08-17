@@ -6,8 +6,7 @@ public class DirectorResponse {
 	private Long id;
 	private String firstName;
 	private String lastName;
-	
-	
+private String image;	
 	
 	public DirectorResponse() {
 		super();
@@ -36,6 +35,12 @@ public class DirectorResponse {
 	}
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
 	}
 	
 }

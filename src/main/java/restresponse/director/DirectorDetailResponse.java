@@ -10,8 +10,8 @@ public class DirectorDetailResponse {
 	private Long id;
 	private String firstName;
 	private String lastName;
-	
-	private List<MovieActorResponse> movies = new ArrayList<>();
+	private String director_image;
+		private List<MovieActorResponse> movies = new ArrayList<>();
 	
 
 	public DirectorDetailResponse() {
@@ -20,23 +20,12 @@ public class DirectorDetailResponse {
 	}
 
 
-
-	public DirectorDetailResponse(Long id, String firstName, String lastName, List<MovieActorResponse> movies) {
+	public DirectorDetailResponse(Long id, String firstName, String lastName, String director_image,List<MovieActorResponse> movies) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.movies = movies;
-	}
-
-
-
-	public List<MovieActorResponse> getmovies() {
-		return movies;
-	}
-
-
-	public void setmovies(List<MovieActorResponse> movies) {
+		this.director_image = director_image;
 		this.movies = movies;
 	}
 
@@ -69,13 +58,28 @@ public class DirectorDetailResponse {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
-	
 
-	
 
-	
-	
-	
+	public String getDirector_image() {
+		return director_image;
+	}
+
+
+	public void setDirector_image(String director_image) {
+		this.director_image = director_image;
+	}
+
+
+	public List<MovieActorResponse> getMovies() {
+		return movies;
+	}
+
+
+	public void setMovies(List<MovieActorResponse> movies) {
+		this.movies = movies;
+	}
+
+
+
 	
 }

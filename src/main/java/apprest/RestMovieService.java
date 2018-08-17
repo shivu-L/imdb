@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -32,7 +33,7 @@ import restresponse.pojo.MovieResponse;
 public class RestMovieService {
 
 	private static final Gson gson = new GsonBuilder().setDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz").create();
-
+	private static final Faker faker = new Faker();
 	@GET
 	@Path("{movie_id}")
 	public Response getMsg(@PathParam("movie_id") Long movie_id) {
@@ -43,7 +44,8 @@ public class RestMovieService {
 
 		MovieResponse movieResponse = new MovieResponse(movies.getId(), movies.getName(), movies.getYear(),
 				movies.getRank());
-
+		movieResponse.setImage(faker.internet().avatar());
+		
 		return Response.status(200).entity(gson.toJson(movieResponse)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
@@ -58,6 +60,15 @@ public class RestMovieService {
 		List<ActorResponse> actorResponses = new ArrayList<>();
 		Movies movie = moviesDAO.findById(movie_id);
 
+
+		if (movie == null) {
+
+			return Response.status(200).entity(gson.toJson("Invalid movie id "))
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
+
+		} 
+		else {
 		MovieResponse movieResponse = new MovieResponse(movie.getId(), movie.getName(), movie.getYear(),
 				movie.getRank());
 
@@ -75,12 +86,16 @@ public class RestMovieService {
 			actorResponses.add(actorResponse);
 		}
 
-		MovieDetailResponse movieDetailResponse = new MovieDetailResponse(movieResponse, directorResponses,
+		
+		MovieDetailResponse movieDetailResponse = new MovieDetailResponse(movieResponse.getId(),movieResponse.getName(),movieResponse.getYear(),movieResponse.getRank(), directorResponses,
 				actorResponses);
+		movieDetailResponse.setImage(faker.internet().avatar());
 
+		
 		return Response.status(200).entity(gson.toJson(movieDetailResponse)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
+	}
 	}
 
 	@GET
@@ -110,14 +125,48 @@ public class RestMovieService {
 						director.getLastName(), genres);
 				directors_list.add(directors);
 			}
+			
+			
 			movies_responses = new MovieCategoryDirectorResponse(movie.getId(), movie.getName(), movie.getYear(),
 					movie.getRank(), movie_genre, directors_list);
+		
 			movies.add(movies_responses);
 		}
 
+		
+		
 		return Response.status(200).entity(gson.toJson(movies)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
 	}
+	
+	
+	@GET
+	@Path("getallMovies")
+	public Response getLimitedMovies() {
+
+		MoviesDAO moviesDAO = new MoviesDAO();
+
+		List<Movies> movies_list = moviesDAO.findLimitedMovies(20);
+		Set<String> genres = new HashSet<String>();
+		List<MovieResponse> movies = new ArrayList<>();
+		MovieResponse movies_responses = new MovieResponse();
+
+		for (Movies movie : movies_list) {
+			movies_responses.setImage(faker.internet().avatar());
+			movies_responses = new MovieResponse(movie.getId(),movie.getName(),movie.getYear(),movie.getRank());
+			movies.add(movies_responses);
+		}
+		
+		
+		return Response.status(200).entity(gson.toJson(movies)).header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
+
+	}
+
+	
+	
+	
+	
 
 }
