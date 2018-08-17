@@ -7,7 +7,6 @@ public class MovieResponse {
 	private Long year;
 	private Float rank;
 	private String image;
-	private String images;
 	
 	public MovieResponse() {
 		super();
@@ -62,14 +61,7 @@ public class MovieResponse {
 		this.rank = rank;
 	}
 
-	public String getImages() {
-		return images;
-	}
-
-	public void setImages(String images) {
-		this.images = images;
-	}
-
+	
 
 
 }
