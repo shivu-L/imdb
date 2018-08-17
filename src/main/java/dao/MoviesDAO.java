@@ -159,4 +159,16 @@ public class MoviesDAO extends BaseHibernateDAO {
 			throw re;
 		}
 	}
+	
+	public void saveUpdate(Movies instance) {
+		log.debug("attaching clean Movies instance");
+		try {
+			getSession().saveOrUpdate(instance);
+
+			log.debug("attach successful");
+		} catch (RuntimeException re) {
+			log.error("attach failed", re);
+			throw re;
+		}
+	}
 }

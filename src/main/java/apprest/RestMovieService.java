@@ -9,7 +9,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-
 import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,6 +26,7 @@ import restresponse.movie.MovieDetailResponse;
 import restresponse.pojo.ActorResponse;
 import restresponse.pojo.DirectorResponse;
 import restresponse.pojo.MovieResponse;
+import util.HibernateSessionFactory;
 
 @Path("/movie")
 
@@ -59,6 +59,8 @@ public class RestMovieService {
 		List<DirectorResponse> directorResponses = new ArrayList<>();
 		List<ActorResponse> actorResponses = new ArrayList<>();
 		Movies movie = moviesDAO.findById(movie_id);
+		
+		Faker faker = new Faker();
 
 
 		if (movie == null) {
@@ -169,4 +171,15 @@ public class RestMovieService {
 	
 	
 
+
+	@GET
+	@Path("top10/{category}")
+	public Response getTopMovieDetail(@PathParam("category") String category) {
+	
+		
+		
+		return Response.status(200).entity(gson.toJson(null)).header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
+	}
+	
 }
