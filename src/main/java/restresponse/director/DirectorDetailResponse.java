@@ -11,6 +11,18 @@ public class DirectorDetailResponse {
 	private String firstName;
 	private String lastName;
 	private String director_image;
+	private String video;
+	
+		public String getVideo() {
+		return video;
+	}
+
+
+	public void setVideo(String video) {
+		this.video = video;
+	}
+
+
 		private List<MovieActorResponse> movies = new ArrayList<>();
 	
 
@@ -20,12 +32,16 @@ public class DirectorDetailResponse {
 	}
 
 
-	public DirectorDetailResponse(Long id, String firstName, String lastName, String director_image,List<MovieActorResponse> movies) {
+	
+
+	public DirectorDetailResponse(Long id, String firstName, String lastName, String director_image, String video,
+			List<MovieActorResponse> movies) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.director_image = director_image;
+		this.video = video;
 		this.movies = movies;
 	}
 

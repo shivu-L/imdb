@@ -6,8 +6,15 @@ public class DirectorResponse {
 	private Long id;
 	private String firstName;
 	private String lastName;
-private String image;	
-	
+    private String image;	
+    private String video;
+    
+	public String getVideo() {
+		return video;
+	}
+	public void setVideo(String video) {
+		this.video = video;
+	}
 	public DirectorResponse() {
 		super();
 		// TODO Auto-generated constructor stub
