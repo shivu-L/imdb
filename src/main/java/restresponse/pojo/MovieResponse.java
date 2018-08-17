@@ -7,7 +7,16 @@ public class MovieResponse {
 	private Long year;
 	private Float rank;
 	private String image;
+	private String video;
 	
+	public String getVideo() {
+		return video;
+	}
+
+	public void setVideo(String video) {
+		this.video = video;
+	}
+
 	public MovieResponse() {
 		super();
 		// TODO Auto-generated constructor stub

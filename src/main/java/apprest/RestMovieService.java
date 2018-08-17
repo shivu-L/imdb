@@ -1,5 +1,11 @@
 package apprest;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +15,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
+import javax.xml.ws.soap.AddressingFeature.Responses;
+
 import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,6 +34,7 @@ import restresponse.movie.MovieDetailResponse;
 import restresponse.pojo.ActorResponse;
 import restresponse.pojo.DirectorResponse;
 import restresponse.pojo.MovieResponse;
+import restresponse.pojo.VideoResponse;
 import util.HibernateSessionFactory;
 
 @Path("/movie")
@@ -45,6 +54,7 @@ public class RestMovieService {
 		MovieResponse movieResponse = new MovieResponse(movies.getId(), movies.getName(), movies.getYear(),
 				movies.getRank());
 		movieResponse.setImage(faker.internet().avatar());
+		movieResponse.setVideo(sendGet().getUrl());
 		
 		return Response.status(200).entity(gson.toJson(movieResponse)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
@@ -92,7 +102,8 @@ public class RestMovieService {
 		MovieDetailResponse movieDetailResponse = new MovieDetailResponse(movieResponse.getId(),movieResponse.getName(),movieResponse.getYear(),movieResponse.getRank(), directorResponses,
 				actorResponses);
 		movieDetailResponse.setImage(faker.internet().avatar());
-
+		movieDetailResponse.setVideo(sendGet().getUrl());
+		
 		
 		return Response.status(200).entity(gson.toJson(movieDetailResponse)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
@@ -156,6 +167,9 @@ public class RestMovieService {
 
 		for (Movies movie : movies_list) {
 			movies_responses.setImage(faker.internet().avatar());
+			
+			movies_responses.setVideo(sendGet().getUrl());
+			
 			movies_responses = new MovieResponse(movie.getId(),movie.getName(),movie.getYear(),movie.getRank());
 			movies.add(movies_responses);
 		}
@@ -166,6 +180,15 @@ public class RestMovieService {
 
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -181,5 +204,48 @@ public class RestMovieService {
 		return Response.status(200).entity(gson.toJson(null)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 	}
+
 	
+	private static VideoResponse sendGet() {
+
+		String url = "http://www.splashbase.co/api/v1/images/random?videos_only=true";
+		VideoResponse  videoResponse = null;
+		URL obj;
+		try {
+			obj = new URL(url);
+		
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		// optional default is GET
+		con.setRequestMethod("GET");
+
+		//add request header
+
+		int responseCode = con.getResponseCode();
+		System.out.println("\nSending 'GET' request to URL : " + url);
+		System.out.println("Response Code : " + responseCode);
+
+		BufferedReader in = new BufferedReader(
+		        new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		in.close();
+
+		//print result
+		System.out.println(response.toString());
+		
+		videoResponse =gson.fromJson(response.toString(), VideoResponse.class);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return videoResponse;
+	}
 }
