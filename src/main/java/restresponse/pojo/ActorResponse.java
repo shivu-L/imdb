@@ -6,9 +6,18 @@ public class ActorResponse {
 	private String firstName;
 	private String lastName;
 	private String gender;
+	private String image;
     private String video;
     
-    public String getVideo() {
+    public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	
+	public String getVideo() {
 		return video;
 	}
 	public void setVideo(String video) {
