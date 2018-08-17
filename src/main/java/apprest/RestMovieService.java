@@ -10,6 +10,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+
+import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -26,6 +31,7 @@ import restresponse.movie.MovieDetailResponse;
 import restresponse.pojo.ActorResponse;
 import restresponse.pojo.DirectorResponse;
 import restresponse.pojo.MovieResponse;
+import util.HibernateSessionFactory;
 
 @Path("/movie")
 
@@ -57,6 +63,8 @@ public class RestMovieService {
 		List<DirectorResponse> directorResponses = new ArrayList<>();
 		List<ActorResponse> actorResponses = new ArrayList<>();
 		Movies movie = moviesDAO.findById(movie_id);
+		
+		Faker faker = new Faker();
 
 		MovieResponse movieResponse = new MovieResponse(movie.getId(), movie.getName(), movie.getYear(),
 				movie.getRank());
@@ -119,5 +127,17 @@ public class RestMovieService {
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
 	}
+	
 
+	@GET
+	@Path("top10/{category}")
+	public Response getTopMovieDetail(@PathParam("category") String category) {
+		
+		
+		
+		
+		return Response.status(200).entity(gson.toJson(null)).header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
+	}
+	
 }

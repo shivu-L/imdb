@@ -6,7 +6,8 @@ public class MovieResponse {
 	private String name;
 	private Long year;
 	private Float rank;
-
+	private String images;
+	
 	public MovieResponse() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -51,5 +52,15 @@ public class MovieResponse {
 	public void setRank(Float rank) {
 		this.rank = rank;
 	}
+
+	public String getImages() {
+		return images;
+	}
+
+	public void setImages(String images) {
+		this.images = images;
+	}
+
+
 
 }

@@ -68,6 +68,7 @@ public class RestDirectorService {
 			List<MovieActorResponse> movieActorResponses = new ArrayList<>();
 			List<MovieResponse> movies = new ArrayList<>();
 			DirectorDetailResponse detailResponse = new DirectorDetailResponse();
+			
 
 			for (Movies movie : director.getMovieses()) {
 				MovieResponse movieDetail = new MovieResponse(movie.getId(), movie.getName(), movie.getYear(),
