@@ -8,6 +8,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +17,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.xml.ws.soap.AddressingFeature.Responses;
+
+import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
 
 import com.github.javafaker.Faker;
 import com.google.gson.Gson;
@@ -190,6 +200,44 @@ public class RestMovieService {
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 	}
 
+	
+	
+	@GET
+	@Path("topten/{category}")
+	public Response getAllMovies(@PathParam("category") String category) {
+		Session session = HibernateSessionFactory.getSession();
+
+		String queryString = "select movie_id,genre from movies_genres GROUP BY movie_id,genre HAVING lower(genre) = lower('"+category+"')";
+		SQLQuery queryObject = session.createSQLQuery(queryString);
+		System.out.println(queryObject.getQueryString());
+		List<Object[]> results = queryObject.list();
+		List<Long> movie_id = new ArrayList<>();
+
+		for (Iterator iterator = results.iterator(); iterator.hasNext();) {
+			Object[] objects = (Object[]) iterator.next();
+			movie_id.add(((Integer) objects[0]).longValue());
+
+		}
+
+		Criteria crit1 = session.createCriteria(Movies.class);
+		ProjectionList projections = Projections.projectionList()
+				.add(Projections.property("id").as("id")).
+				//.add(Projections.id().as("id"))
+				add(Projections.property("name").as("name")).
+				add(Projections.property("year").as("year"))
+				.add(Projections.property("rank").as("rank"));
+		crit1.setProjection(projections);
+		crit1.add(Restrictions.in("id", movie_id));
+		crit1.addOrder(Order.desc("rank"));
+		crit1.setMaxResults(10)
+		.setResultTransformer(Transformers.aliasToBean(MovieResponse.class));
+
+		List<MovieResponse> movieResponses = crit1.list();
+
+		return Response.status(200).entity(gson.toJson(movieResponses)).header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
+		
+	}
 	
 	private static VideoResponse sendGet() {
 
