@@ -13,11 +13,11 @@
 		<property name="hibernate.hbm2ddl.auto">update</property>
 
 		<property name="show_sql">true</property>
-		<!-- <mapping class="pojo.Account"></mapping>
-		<mapping class="pojo.Banking"></mapping> 
+		<!-- <mapping class="pojo.Account"></mapping>  -->
+		<!-- <mapping class="pojo.Banking"></mapping> 
 		<mapping class="pojo.Boy"></mapping>
-		<mapping class="pojo.Girl"></mapping>  -->
-		
+		<mapping class="pojo.Girl"></mapping>
+		 -->
 	
 		
 		

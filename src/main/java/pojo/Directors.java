@@ -25,6 +25,7 @@ public class Directors implements java.io.Serializable {
 	private Long id;
 	private String firstName;
 	private String lastName;
+	private String gender;
 	private Set<DirectorsGenres> directorsGenreses = new HashSet<DirectorsGenres>(0);
 	private Set<Movies> movieses = new HashSet<Movies>(0);
 
@@ -100,6 +101,14 @@ public class Directors implements java.io.Serializable {
 
 	public void setMovieses(Set<Movies> movieses) {
 		this.movieses = movieses;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
 }

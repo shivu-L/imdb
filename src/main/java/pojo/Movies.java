@@ -27,6 +27,8 @@ public class Movies implements java.io.Serializable {
 	private String name;
 	private Long year;
 	private Float rank;
+	private String image;
+	private String video;
 	private Set<Roles> roleses = new HashSet<Roles>(0);
 	private Set<MoviesGenres> moviesGenreses = new HashSet<MoviesGenres>(0);
 	private Set<Directors> directorses = new HashSet<Directors>(0);
@@ -129,5 +131,22 @@ public class Movies implements java.io.Serializable {
 	public void setDirectorses(Set<Directors> directorses) {
 		this.directorses = directorses;
 	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public String getVideo() {
+		return video;
+	}
+
+	public void setVideo(String video) {
+		this.video = video;
+	}
+	
 
 }

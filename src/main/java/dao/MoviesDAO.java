@@ -2,13 +2,23 @@ package dao;
 
 import java.util.List;
 import java.util.Set;
+
+import javax.enterprise.inject.CreationException;
+
+import org.hibernate.Criteria;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
 import static org.hibernate.criterion.Example.create;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pojo.Movies;
+import pojo.Searchs;
+import util.HibernateSessionFactory;
 
 /**
  * A data access object (DAO) providing persistence and search support for
@@ -125,6 +135,61 @@ public class MoviesDAO extends BaseHibernateDAO {
 		}
 	}
 	
+	
+	public List findLimitedSkipMovies(Integer max_result,Integer skip) {
+		log.debug("finding all Movies instances");
+		try {
+			String queryString = "from Movies";
+			Query queryObject = getSession().createQuery(queryString);
+			queryObject.setFirstResult(skip);
+			queryObject.setMaxResults(max_result);
+			return queryObject.list();
+		} catch (RuntimeException re) {
+			log.error("find all failed", re);
+			throw re;
+		}
+	}
+	
+	public List searchMovies(Searchs searchs, Integer max_result, Integer skip) {
+		log.debug("finding all Movies instances");
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Criteria criteria = session.createCriteria(Movies.class);
+			criteria.add(Restrictions.like(NAME, "%A-Z%"));
+			criteria.add(Restrictions.like(RANK, "%%"));
+			criteria.add(Restrictions.like(YEAR, "%%%%"));
+			return criteria.list();
+
+		} catch (RuntimeException re) {
+			log.error("find all failed", re);
+			throw re;
+		}
+	}
+
+	
+	public List sortMovies(String searchs, Integer max_result, Integer skip) {
+		log.debug("finding all Movies instances");
+		try {
+			Session session = HibernateSessionFactory.getSession();
+			Criteria criteria = session.createCriteria(Movies.class);
+			criteria.add(Restrictions.like(NAME, "%A%"));
+			criteria.addOrder(Order.asc(NAME));
+			criteria.addOrder(Order.desc(NAME));
+			
+			criteria.add(Restrictions.like(RANK, "%%"));
+			criteria.addOrder(Order.asc(RANK));
+			criteria.addOrder(Order.desc(RANK));
+			
+			criteria.add(Restrictions.like(YEAR, "%A%"));
+			criteria.addOrder(Order.asc(YEAR));
+			criteria.addOrder(Order.desc(YEAR));
+			return criteria.list();
+
+		} catch (RuntimeException re) {
+			log.error("find all failed", re);
+			throw re;
+		}
+	}
 
 	public Movies merge(Movies detachedInstance) {
 		log.debug("merging Movies instance");
@@ -148,6 +213,7 @@ public class MoviesDAO extends BaseHibernateDAO {
 			throw re;
 		}
 	}
+
 
 	public void attachClean(Movies instance) {
 		log.debug("attaching clean Movies instance");

@@ -12,7 +12,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
@@ -33,15 +35,19 @@ import com.google.gson.GsonBuilder;
 
 import dao.MoviesDAO;
 import pojo.Actors;
+import pojo.CriteriaPojo;
 import pojo.Directors;
 import pojo.DirectorsGenres;
 import pojo.Movies;
 import pojo.MoviesGenres;
 import pojo.Roles;
+import pojo.Searchs;
 import restresponse.director.DirectorGenresResponse;
 import restresponse.director.MovieCategoryDirectorResponse;
 import restresponse.movie.MovieDetailResponse;
 import restresponse.pojo.ActorResponse;
+import restresponse.pojo.Data;
+import restresponse.pojo.DatatableResponse;
 import restresponse.pojo.DirectorResponse;
 import restresponse.pojo.MovieResponse;
 import restresponse.pojo.VideoResponse;
@@ -53,6 +59,7 @@ public class RestMovieService {
 
 	private static final Gson gson = new GsonBuilder().setDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz").create();
 	private static final Faker faker = new Faker();
+
 	@GET
 	@Path("{movie_id}")
 	public Response getMsg(@PathParam("movie_id") Long movie_id) {
@@ -65,7 +72,7 @@ public class RestMovieService {
 				movies.getRank());
 		movieResponse.setImage(faker.internet().avatar());
 		movieResponse.setVideo(sendGet().getUrl());
-		
+
 		return Response.status(200).entity(gson.toJson(movieResponse)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
@@ -79,9 +86,8 @@ public class RestMovieService {
 		List<DirectorResponse> directorResponses = new ArrayList<>();
 		List<ActorResponse> actorResponses = new ArrayList<>();
 		Movies movie = moviesDAO.findById(movie_id);
-		
-		Faker faker = new Faker();
 
+		Faker faker = new Faker();
 
 		if (movie == null) {
 
@@ -89,36 +95,35 @@ public class RestMovieService {
 					.header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
-		} 
-		else {
-		MovieResponse movieResponse = new MovieResponse(movie.getId(), movie.getName(), movie.getYear(),
-				movie.getRank());
+		} else {
+			MovieResponse movieResponse = new MovieResponse(movie.getId(), movie.getName(), movie.getYear(),
+					movie.getRank());
 
-		for (Directors director : movie.getDirectorses()) {
-			DirectorResponse dirResponse = new DirectorResponse(director.getId(), director.getFirstName(),
-					director.getLastName());
-			directorResponses.add(dirResponse);
+			for (Directors director : movie.getDirectorses()) {
+				DirectorResponse dirResponse = new DirectorResponse(director.getId(), director.getFirstName(),
+						director.getLastName());
+				directorResponses.add(dirResponse);
+			}
+
+			for (Roles role : movie.getRoleses()) {
+				Actors actor = role.getActors();
+
+				ActorResponse actorResponse = new ActorResponse(actor.getId(), actor.getFirstName(),
+						actor.getLastName(), actor.getGender());
+				actorResponses.add(actorResponse);
+			}
+
+			MovieDetailResponse movieDetailResponse = new MovieDetailResponse(movieResponse.getId(),
+					movieResponse.getName(), movieResponse.getYear(), movieResponse.getRank(), directorResponses,
+					actorResponses);
+			movieDetailResponse.setImage(faker.internet().avatar());
+			movieDetailResponse.setVideo(sendGet().getUrl());
+
+			return Response.status(200).entity(gson.toJson(movieDetailResponse))
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
+
 		}
-
-		for (Roles role : movie.getRoleses()) {
-			Actors actor = role.getActors();
-
-			ActorResponse actorResponse = new ActorResponse(actor.getId(), actor.getFirstName(), actor.getLastName(),
-					actor.getGender());
-			actorResponses.add(actorResponse);
-		}
-
-		
-		MovieDetailResponse movieDetailResponse = new MovieDetailResponse(movieResponse.getId(),movieResponse.getName(),movieResponse.getYear(),movieResponse.getRank(), directorResponses,
-				actorResponses);
-		movieDetailResponse.setImage(faker.internet().avatar());
-		movieDetailResponse.setVideo(sendGet().getUrl());
-		
-		
-		return Response.status(200).entity(gson.toJson(movieDetailResponse)).header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
-
-	}
 	}
 
 	@GET
@@ -148,22 +153,18 @@ public class RestMovieService {
 						director.getLastName(), genres);
 				directors_list.add(directors);
 			}
-			
-			
+
 			movies_responses = new MovieCategoryDirectorResponse(movie.getId(), movie.getName(), movie.getYear(),
 					movie.getRank(), movie_genre, directors_list);
-		
+
 			movies.add(movies_responses);
 		}
 
-		
-		
 		return Response.status(200).entity(gson.toJson(movies)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
 	}
-	
-	
+
 	@GET
 	@Path("getallMovies")
 	public Response getLimitedMovies() {
@@ -177,15 +178,71 @@ public class RestMovieService {
 
 		for (Movies movie : movies_list) {
 			movies_responses.setImage(faker.internet().avatar());
-			
+
 			movies_responses.setVideo(sendGet().getUrl());
-			
-			movies_responses = new MovieResponse(movie.getId(),movie.getName(),movie.getYear(),movie.getRank());
+
+			movies_responses = new MovieResponse(movie.getId(), movie.getName(), movie.getYear(), movie.getRank());
 			movies.add(movies_responses);
 		}
-		
-		
+
 		return Response.status(200).entity(gson.toJson(movies)).header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
+
+	}
+
+	@POST
+	@Path("getmoviedatatable")
+	public Response getMovieDataTable( @FormParam("data") String data) {
+		Gson gson = new GsonBuilder().setDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz").create();
+		
+		DatatableResponse datatableResponse = new DatatableResponse();
+		MoviesDAO moviesDAO = new MoviesDAO();
+		CriteriaPojo criteriaPojo = gson.fromJson(data, CriteriaPojo.class);
+		datatableResponse.setDraw(criteriaPojo.getDraw());
+		
+		 Session session = HibernateSessionFactory.getSession();
+		 Criteria criteria = session.createCriteria(Movies.class);
+		 criteria.setProjection(Projections.rowCount());
+		 List Movies = criteria.list();
+		
+		             if (Movies!=null) {
+		            	 Long rowCount = (Long) Movies.get(0);
+		                 System.out.println("Total Results:" + rowCount);
+		                 datatableResponse.setRecordsTotal(rowCount.intValue());
+		                 datatableResponse.setRecordsFiltered(rowCount.intValue());
+		
+		             }
+		           List<Movies> movies=  moviesDAO.findLimitedSkipMovies(criteriaPojo.getLength(),criteriaPojo.getStart() );
+		           List<Data> datas = new ArrayList<>(); 
+		           
+		           for (Movies movies2 : movies) {
+		        	   Data data1 = new Data(movies2.getId()+"", movies2.getName(), movies2.getYear()+"");
+		        	   datas.add(data1);
+						
+					}
+		           datatableResponse.setData(datas);
+		           
+		           
+		           Searchs searchs = new Searchs();
+		           
+		           
+		        	   List<Movies> movies1=  moviesDAO.searchMovies(searchs, criteriaPojo.getLength(),criteriaPojo.getStart());
+			           List<Searchs> searchs2 = new ArrayList<>(); 
+			           
+			           for (Searchs searchs3 : searchs2) {
+						
+			        	   Searchs searchs4 = new Searchs("Vishal",true);
+			        	   searchs2.add(searchs4);
+							
+						}
+			            
+		        	   
+		        
+		           //datatableResponse.setData(data);
+		
+		System.out.println("data is -------> "+criteriaPojo.getDraw());
+	
+		return Response.status(200).entity(gson.toJson(datatableResponse)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
 	}
@@ -193,21 +250,18 @@ public class RestMovieService {
 	@GET
 	@Path("top10/{category}")
 	public Response getTopMovieDetail(@PathParam("category") String category) {
-	
-		
-		
+
 		return Response.status(200).entity(gson.toJson(null)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 	}
 
-	
-	
 	@GET
 	@Path("topten/{category}")
 	public Response getAllMovies(@PathParam("category") String category) {
 		Session session = HibernateSessionFactory.getSession();
 
-		String queryString = "select movie_id,genre from movies_genres GROUP BY movie_id,genre HAVING lower(genre) = lower('"+category+"')";
+		String queryString = "select movie_id,genre from movies_genres GROUP BY movie_id,genre HAVING lower(genre) = lower('"
+				+ category + "')";
 		SQLQuery queryObject = session.createSQLQuery(queryString);
 		System.out.println(queryObject.getQueryString());
 		List<Object[]> results = queryObject.list();
@@ -220,58 +274,55 @@ public class RestMovieService {
 		}
 
 		Criteria crit1 = session.createCriteria(Movies.class);
-		ProjectionList projections = Projections.projectionList()
-				.add(Projections.property("id").as("id")).
-				//.add(Projections.id().as("id"))
-				add(Projections.property("name").as("name")).
-				add(Projections.property("year").as("year"))
+		ProjectionList projections = Projections.projectionList().add(Projections.property("id").as("id")).
+
+				add(Projections.property("name").as("name")).add(Projections.property("year").as("year"))
 				.add(Projections.property("rank").as("rank"));
+
 		crit1.setProjection(projections);
 		crit1.add(Restrictions.in("id", movie_id));
 		crit1.addOrder(Order.desc("rank"));
-		crit1.setMaxResults(10)
-		.setResultTransformer(Transformers.aliasToBean(MovieResponse.class));
+		crit1.setMaxResults(10).setResultTransformer(Transformers.aliasToBean(MovieResponse.class));
 
 		List<MovieResponse> movieResponses = crit1.list();
 
 		return Response.status(200).entity(gson.toJson(movieResponses)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
-		
+
 	}
-	
+
 	private static VideoResponse sendGet() {
 
 		String url = "http://www.splashbase.co/api/v1/images/random?videos_only=true";
-		VideoResponse  videoResponse = null;
+		VideoResponse videoResponse = null;
 		URL obj;
 		try {
 			obj = new URL(url);
-		
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		// optional default is GET
-		con.setRequestMethod("GET");
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		//add request header
+			// optional default is GET
+			con.setRequestMethod("GET");
 
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
+			// add request header
 
-		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'GET' request to URL : " + url);
+			System.out.println("Response Code : " + responseCode);
 
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
 
-		//print result
-		System.out.println(response.toString());
-		
-		videoResponse =gson.fromJson(response.toString(), VideoResponse.class);
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// print result
+			System.out.println(response.toString());
+
+			videoResponse = gson.fromJson(response.toString(), VideoResponse.class);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

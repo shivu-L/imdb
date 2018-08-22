@@ -33,6 +33,7 @@ import restresponse.pojo.VideoResponse;
 public class RestDirectorService {
 	private static final Gson gson = new GsonBuilder().setDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz").create();
 	private static final Faker faker = new Faker();
+
 	@GET
 	@Path("{director_id}")
 	public Response getMsg(@PathParam("director_id") Long id) {
@@ -49,7 +50,7 @@ public class RestDirectorService {
 			// setting director response here
 			DirectorResponse dirResponse = new DirectorResponse(director.getId(), director.getFirstName(),
 					director.getLastName());
-			
+
 			dirResponse.setImage(faker.internet().avatar());
 			dirResponse.setVideo(sendGet().getUrl());
 
@@ -78,7 +79,6 @@ public class RestDirectorService {
 			List<MovieActorResponse> movieActorResponses = new ArrayList<>();
 			List<MovieResponse> movies = new ArrayList<>();
 			DirectorDetailResponse detailResponse = new DirectorDetailResponse();
-			
 
 			for (Movies movie : director.getMovieses()) {
 				MovieResponse movieDetail = new MovieResponse(movie.getId(), movie.getName(), movie.getYear(),
@@ -100,62 +100,55 @@ public class RestDirectorService {
 			}
 
 			detailResponse = new DirectorDetailResponse(director.getId(), director.getFirstName(),
-					director.getLastName(),faker.internet().avatar(),sendGet().getUrl(), movieActorResponses);
+					director.getLastName(), faker.internet().avatar(), sendGet().getUrl(), movieActorResponses);
 
-			
-			
 			return Response.status(200).entity(gson.toJson(detailResponse)).header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 
 		}
 
 	}
-	
 
 	@GET
 	@Path("top10/{category}")
 	public Response getTopMovieDetail(@PathParam("category") String category) {
-	
-		
-		
+
 		return Response.status(200).entity(gson.toJson(null)).header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT").allow("OPTIONS").build();
 	}
 
-	
 	private static VideoResponse sendGet() {
 
 		String url = "http://www.splashbase.co/api/v1/images/random?videos_only=true";
-		VideoResponse  videoResponse = null;
+		VideoResponse videoResponse = null;
 		URL obj;
 		try {
 			obj = new URL(url);
-		
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		// optional default is GET
-		con.setRequestMethod("GET");
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-		//add request header
+			// optional default is GET
+			con.setRequestMethod("GET");
 
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
+			// add request header
 
-		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'GET' request to URL : " + url);
+			System.out.println("Response Code : " + responseCode);
 
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
 
-		//print result
-		System.out.println(response.toString());
-		
-		videoResponse =gson.fromJson(response.toString(), VideoResponse.class);
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// print result
+			System.out.println(response.toString());
+
+			videoResponse = gson.fromJson(response.toString(), VideoResponse.class);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
